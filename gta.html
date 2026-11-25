@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SUFIAN CITY - Mini GTA</title>
+<style>
+body{background:#000;color:#fff;text-align:center;font-family:Arial;margin:0}
+.top{display:flex;justify-content:space-between;padding:10px 20px;background:#111}
+#city{width:360px;height:480px;background:#222;margin:10px auto;position:relative;overflow:hidden;border:3px solid #ff6a00;border-radius:10px}
+.road{position:absolute;background:#444}
+.building{position:absolute;background:#00bfff;border:2px solid #fff;border-radius:5px}
+#player{width:30px;height:30px;background:#ff6a00;position:absolute;border-radius:50%;z-index:10;border:2px solid #fff;font-size:18px;text-align:center;line-height:30px}
+#car{width:45px;height:22px;background:red;position:absolute;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:16px}
+#coin{width:20px;height:20px;background:gold;border-radius:50%;position:absolute;box-shadow:0 0 10px gold}
+#police{width:30px;height:30px;background:blue;position:absolute;border-radius:50%;border:2px solid #fff;text-align:center;line-height:30px}
+button{padding:12px 18px;margin:3px;border-radius:15px;border:none;font-weight:bold;font-size:16px}
+</style>
+</head>
+<body>
+<div class="top"><span>🏙️ <b>SUFIAN CITY</b></span><span>💰 $<span id="money">0</span></span><span>⭐ Wanted: <span id="wanted">0</span></span></div>
+<h3>Mini GTA - Car Chura, Paisa Loot, Police Se Bach!</h3>
+<div id="city">
+<div class="road" style="left:170px;top:0;width:30px;height:480px"></div>
+<div class="road" style="left:0;top:230px;width:360px;height:30px"></div>
+<div class="building" style="left:20px;top:20px;width:80px;height:80px">🏢</div>
+<div class="building" style="left:250px;top:20px;width:80px;height:80px">🏠</div>
+<div class="building" style="left:20px;top:300px;width:80px;height:80px">🏪</div>
+<div class="building" style="left:250px;top:300px;width:80px;height:80px">🏦</div>
+<div id="coin">🪙</div>
+<div id="car">🚗</div>
+<div id="player">🧍</div>
+<div id="police">👮</div>
+</div>
+<p id="msg">WASD / Arrow se chalo! Car ke paas jao to car me baith jaoge!</p>
+<button onclick="move('up')">⬆️</button><br>
+<button onclick="move('left')">⬅️</button>
+<button onclick="move('down')">⬇️</button>
+<button onclick="move('right')">➡️</button>
+<br><br>
+<button onclick="stealCar()" style="background:#ff6a00;color:#fff">🚗 CAR CHURAO</button>
+<button onclick="location.reload()" style="background:#fff">🔄 RESTART</button>
+
+<script>
+let px=160, py=250, money=0, wanted=0, inCar=false;
+let carX=100, carY=100, coinX=280, coinY=150, polX=50, polY=400;
+let player=document.getElementById('player'), car=document.getElementById('car'), coin=document.getElementById('coin'), police=document.getElementById('police');
+function update(){
+player.style.left=px+'px'; player.style.top=py+'px';
+car.style.left=carX+'px'; car.style.top=carY+'px';
+coin.style.left=coinX+'px'; coin.style.top=coinY+'px';
+police.style.left=polX+'px'; police.style.top=polY+'px';
+player.innerHTML=inCar?'🚗':'🧍';
+}
+function move(d){
+let s=inCar?20:12;
+if(d=='up')py=Math.max(0,py-s); if(d=='down')py=Math.min(450,py+s);
+if(d=='left')px=Math.max(0,px-s); if(d=='right')px=Math.min(330,px+s);
+if(inCar){carX=px; carY=py;}
+check();
+update();
+}
+document.onkeydown=(e)=>{if(e.key=='ArrowUp'||e.key=='w')move('up');if(e.key=='ArrowDown'||e.key=='s')move('down');if(e.key=='ArrowLeft'||e.key=='a')move('left');if(e.key=='ArrowRight'||e.key=='d')move('right');};
+function stealCar(){
+if(Math.abs(px-carX)<50 && Math.abs(py-carY)<50){
+inCar=true; document.getElementById('msg').innerText="🔥 CAR MIL GAYI! Ab tu fast hai! Police aa rahi hai!";
+wanted=1; document.getElementById('wanted').innerText=wanted;
+}else{document.getElementById('msg').innerText="Car ke paas jao pehle!";}
+}
+function check(){
+if(Math.abs(px-coinX)<25 && Math.abs(py-coinY)<25){
+money+=100; document.getElementById('money').innerText=money;
+coinX=Math.floor(Math.random()*320); coinY=Math.floor(Math.random()*440);
+document.getElementById('msg').innerText="💰 +100 Paisa Mila! Total: $"+money;
+if(money>=300 && wanted==0){wanted=1; document.getElementById('wanted').innerText=wanted;}
+}
+if(wanted>0){
+if(polX<px)polX+=2; if(polX>px)polX-=2;
+if(polY<py)polY+=2; if(polY>py)polY-=2;
+if(Math.abs(px-polX)<25 && Math.abs(py-polY)<25){
+alert("👮 PAKDE GAYE! Police ne pakad liya! Score: $"+money); location.reload();
+}
+}
+}
+setInterval(()=>{if(wanted>0)check(); update();},50);
+update();
+</script>
+</body>
+</html>
